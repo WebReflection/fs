@@ -5,38 +5,56 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>@webreflection/fs - Emscripten FS, PATH and PATH_FS</title>
   <script type="module">
-    content.textContent = 'loading File System ...';
-    import {FS, PATH, PATH_FS} from '../fs.js';
-    content.textContent = '';
+    // bootstrap the File system
+    directory.textContent = 'loading File System ...';
+    const {FS, PATH, PATH_FS} = await import('../fs.js');
+    directory.textContent = '';
 
+    // common read handler
+    const read = () => {
+      const html = [];
+      for (const file of FS.readdir(mountDir).filter(file => !/^\.+$/.test(file))) {
+        html.push(`<li><a href="#${file}">${file}</a></li>`);
+      }
+      directory.innerHTML = `<ul>${html.join('')}</ul>`;
+      for (const a of directory.querySelectorAll('a'))
+        a.addEventListener('click', show);
+    };
+
+    // common syncfs handler + allow writing
+    const onsync = error => {
+      if (error) throw error;
+      read();
+      write.disabled = false;
+    };
+
+    // common directory links handler (alert file content)
+    const show = event => {
+      event.preventDefault();
+      const file = event.currentTarget.getAttribute('href').slice(1);
+      alert(FS.readFile(`${mountDir}/${file}`, {encoding: 'utf8'}));
+    };
+
+    // initialize the mount point
     const mountDir = '/idbfs';
     FS.mkdir(mountDir);
     FS.mount(FS.filesystems.IDBFS, { root: '.' }, mountDir);
-    FS.syncfs(true, error => {
-      if (error) throw error;
-      read();
-    });
+    FS.syncfs(true, onsync);
 
-    const read = () => {
-      content.textContent = FS.readdir(mountDir).filter(file => !/^[.]+$/.test(file)).join('\n');
-    };
-
-    write.disabled = false;
+    // enable writing on the FS
     write.addEventListener('click', event => {
       event.preventDefault();
       const content = prompt('What would you like to write?');
       if (content) {
+        write.disabled = true;
         FS.writeFile(`${mountDir}/file_${+new Date}.txt`, content);
-        FS.syncfs(error => {
-          if (error) throw error;
-        });
-        read();
+        FS.syncfs(onsync);
       }
     });
   </script>
 </head>
 <body>
   <button id="write" disabled>Write into folder</button>
-  <pre id="content"></pre>
+  <pre id="directory"></pre>
 </body>
 </html>
