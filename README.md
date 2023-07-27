@@ -9,3 +9,5 @@ import { FS, PATH, PATH_FS } from '@webreflection/fs';
 
 // that's it !!!
 ```
+
+[Live test](https://webreflection.github.io/fs/test/)
