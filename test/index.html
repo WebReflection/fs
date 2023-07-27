@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>@webreflection/fs - Emscripten FS, PATH and PATH_FS</title>
+  <script type="module">
+    content.textContent = 'loading File System ...';
+    import {FS, PATH, PATH_FS} from '../fs.js';
+    content.textContent = '';
+
+    const mountDir = '/idbfs';
+    FS.mkdir(mountDir);
+    FS.mount(FS.filesystems.IDBFS, { root: '.' }, mountDir);
+    FS.syncfs(true, error => {
+      if (error) throw error;
+      read();
+    });
+
+    const read = () => {
+      content.textContent = FS.readdir(mountDir).filter(file => !/^[.]+$/.test(file)).join('\n');
+    };
+
+    write.disabled = false;
+    write.addEventListener('click', event => {
+      event.preventDefault();
+      const content = prompt('What would you like to write?');
+      if (content) {
+        FS.writeFile(`${mountDir}/file_${+new Date}.txt`, content);
+        FS.syncfs(error => {
+          if (error) throw error;
+        });
+        read();
+      }
+    });
+  </script>
+</head>
+<body>
+  <button id="write" disabled>Write into folder</button>
+  <pre id="content"></pre>
+</body>
+</html>
