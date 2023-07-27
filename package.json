@@ -1,13 +1,18 @@
 {
   "name": "@webreflection/fs",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Emscripten FS, PATH and PATH_FS utilities as a module",
   "main": "fs.js",
   "scripts": {
     "build": "touch build/fs.c && sh build/fs && npm run size",
     "size": "echo -e \"\\033[1mfs.js\\033[0m: $(cat fs.js | brotli | wc -c) bytes after brotli\""
   },
-  "keywords": ["emscripten", "FS", "PATH", "PATH_FS"],
+  "keywords": [
+    "emscripten",
+    "FS",
+    "PATH",
+    "PATH_FS"
+  ],
   "author": "Andrea Giammarchi",
   "license": "ISC",
   "repository": {
