@@ -1,6 +1,6 @@
 {
   "name": "@webreflection/fs",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Emscripten FS, PATH and PATH_FS utilities as a module",
   "main": "fs.js",
   "scripts": {
