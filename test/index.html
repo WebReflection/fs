@@ -19,6 +19,7 @@
       directory.innerHTML = `<ul>${html.join('')}</ul>`;
       for (const a of directory.querySelectorAll('a'))
         a.addEventListener('click', show);
+      worker.postMessage('read');
     };
 
     // common syncfs handler + allow writing
@@ -34,6 +35,9 @@
       const file = event.currentTarget.getAttribute('href').slice(1);
       alert(FS.readFile(`${mountDir}/${file}`, {encoding: 'utf8'}));
     };
+
+    // test workers sharing same FS
+    const worker = new Worker('./index.js', {type: 'module'});
 
     // initialize the mount point
     const mountDir = '/idbfs';
