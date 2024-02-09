@@ -2,8 +2,14 @@
 
 emcc build/fs.c -o fs.js -lidbfs.js -sEXPORT_ES6=1 -sMODULARIZE=1 -sEXPORTED_RUNTIME_METHODS=['FS','PATH','PATH_FS'] -Oz
 
-sed 's/export default Module;/const {FS,PATH,PATH_FS}=await Module();/' fs.js -i
+WASM="$(base64 fs.wasm)"
+
+sed "s/export default Module;/const {FS,PATH,PATH_FS}=await Module({locateFile:()=>'data:application\\/octet-stream;base64,$WASM'});/" fs.js -i
 echo ''>>fs.js
 echo 'export {FS,PATH,PATH_FS};'>>fs.js
 
-npx terser --module --mangle --ecma 2022 fs.js -o fs.js
+if [ "$NO_MIN" = "" ]; then
+  npx terser --module --mangle --ecma 2024 fs.js -o fs.mjs
+fi
+
+rm fs.{js,wasm}

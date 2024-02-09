@@ -7,7 +7,7 @@
   <script type="module">
     // bootstrap the File system
     directory.textContent = 'loading File System ...';
-    const {FS, PATH, PATH_FS} = await import('../fs.js');
+    import {FS, PATH, PATH_FS} from '../fs.mjs';
     directory.textContent = '';
 
     // common read handler
